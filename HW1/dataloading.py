@@ -9,9 +9,7 @@ def load_raw_dataset(txtFilePath):
     return [item[0] for item in dataset], [item[1] for item in dataset], [[item[2]] for item in dataset]
 
 
-def convert_raw_to_features(lWords):
-    return [word[0].isupper() for word in lWords]
-
-
-def get_dataset():
-    pass
+def InListFeature(x_train):
+    days_months = ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday']
+    days_months.extend(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
+    return [word in days_months for word in x_train]
