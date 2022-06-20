@@ -12,47 +12,56 @@ import time
 start_time = time.time()
 
 if __name__ == '__main__':
+    # ------------------------------------------------------------------
+    # -------------------- Training Data Preprocess --------------------
+    # ------------------------------------------------------------------
+    # Extracting data, features and labels
     x_train, feature_train, y_train = load_raw_dataset("data\\train.txt")
-    capital_feature = [word[0].isupper() for word in x_train]
-    abc_feature = [word[0].isalpha() for word in x_train]
-    day_feature = InListFeature(x_train)
-    feature_train = [list(x) for x in zip(x_train, feature_train, capital_feature, abc_feature, day_feature)]
+    # Fitting and transforming OneHotEncoder for the training data
     encoder = OneHotEncoder(handle_unknown="ignore").fit(feature_train)
     feature_train = encoder.transform(feature_train)
+    # Encoding the labels
     y_train = np.array(OneHotEncoder(drop='if_binary').fit_transform(y_train).toarray()).ravel()
     print(f"Training data is ready to use\nElapse time: {time.time() - start_time:.02f} sec")
-
+    # ------------------------------------------------------------------
+    # -------------------- Validation Data Preprocess ------------------
+    # ------------------------------------------------------------------
+    # Extracting data, features and labels
     x_val, feature_val, y_val = load_raw_dataset("data\\eval.txt")
-    capital_feature = [word[0].isupper() for word in x_val]
-    abc_feature = [word[0].isalpha() for word in x_val]
-    day_feature = InListFeature(x_val)
-    feature_val = [list(x) for x in zip(x_val, feature_val, capital_feature, abc_feature, day_feature)]
+    # Transforming the above encoder for the validation data
     feature_val = encoder.transform(feature_val)
+    # Encoding the labels
     y_val = np.array(OneHotEncoder(drop='if_binary').fit_transform(y_val).toarray()).ravel()
     print(f"Validation data is ready to use\nElapse time: {time.time() - start_time:.02f} sec")
-
-    model = SVC()
-
-    model.fit(feature_train, y_train)
+    # ------------------------------------------------------------------
+    # ------------------ Model Definition & Evaluation -----------------
+    # ------------------------------------------------------------------
+    model = SVC()  # TODO:GRIDSEARCH
+    model.fit(feature_train, y_train)  # fitting the model on the training data
     print(f"SVM model was trained\nElapse time: {time.time() - start_time:.02f} sec")
-
     print(f"Train score: {model.score(feature_train, y_train):.03f}")
     print(f"Eval score: {model.score(feature_val, y_val):.03f}")
 
-    predictions = model.predict(feature_val)
+    predictions = model.predict(feature_val)  # calculate the predictions on the validation data
 
-    cm = confusion_matrix(y_val, predictions, labels=model.classes_)
+    cm = confusion_matrix(y_val, predictions, labels=model.classes_)  # building a confusion matrix
     disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                                   display_labels=model.classes_)
     disp.plot()
     plt.show()
 
+    # Saving bad classification for review
     confused_data = [word + f" , {y_val[idx]}\n" for idx, word in enumerate(x_val) if y_val[idx] != predictions[idx]]
-    file1 = open("confusions.txt", "w")
-    file1.write("Word, true label \n")
-    file1.writelines(confused_data)
-    file1.close()  # to change file access modes
+    file = open("confusions.txt", "w")
+    file.write("Word, true label \n")
+    file.writelines(confused_data)
+    file.close()
 
-
-
-    a = 1
+    # create "competitive.txt" for substitution
+    # open both files
+    with open('data/test.txt', 'r') as firstfile, open('competitive.txt', 'a') as secondfile:
+        # read content from test file
+        for line in firstfile:
+            # append content to second file
+            if line == ". .":
+                secondfile.write(line + " O\n")

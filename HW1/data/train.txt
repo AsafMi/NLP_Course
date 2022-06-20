@@ -2753,7 +2753,7 @@ funds NNS O
 were VBD O
 at IN O
 six CD O
-, , O #TODO: remove ,==0 & day, holiday, months, languages,
+, , O
 5-7/8 JJ O
 percent NN O
 . . O
@@ -2761,7 +2761,7 @@ percent NN O
 Israel NNP I
 approves VBZ O
 Arafat NNP I
-'s POS O #TODO : not abc == 0 in the first letter,  if its the first word in the sentence use different capitalized category
+'s POS O
 flight NN O
 to TO O
 West NNP I
