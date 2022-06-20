@@ -13,7 +13,7 @@ def load_raw_dataset(txt_path):
 
     x = [item[0] for item in dataset]
     feature = [item[1] for item in dataset]
-    y = [[item[2]] for item in dataset]
+    y = [item[2] for item in dataset]
 
     capital_feature = [word[0].isupper() for word in x]
     # abc_feature = [word[0].isalpha() for word in x] # didn't help our model
