@@ -60,20 +60,21 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------
     # load "train.txt" and "eval.txt"
     x_train, feature_train, y_train = load_raw_dataset("data\\train.txt")
-    # x_val, feature_val, y_val = load_raw_dataset("data\\eval.txt")
+    x_val, feature_val, y_val = load_raw_dataset("data\\eval.txt")
     # concatenate train and eval
-    # x_train.extend(x_val)
-    # feature_train.extend(feature_val)
-    # y_train.extend(y_val)
+    x_train.extend(x_val)
+    feature_train.extend(feature_val)
+    y_train.extend(y_val)
     # One-Hot-Encoding of the data
     x_encoder = OneHotEncoder(handle_unknown="ignore").fit(feature_train)
     feature_train = x_encoder.transform(feature_train)
     # train on a bigger dataset (train + eval)
     model = SVC()
     model.fit(feature_train, y_train)
+    print(f"Train score: {model.score(feature_train, y_train):.03f}")
     # open both files
     open('competitive.txt', 'w').close()
-    with open('data/train.txt', 'r') as firstfile, open('competitive.txt', 'a') as secondfile:
+    with open('data/test.txt', 'r') as firstfile, open('competitive.txt', 'a') as secondfile:
         # read content from test file
         for line in tqdm(firstfile):
             data = line.strip().split(sep=" ")
@@ -87,7 +88,7 @@ if __name__ == '__main__':
                 secondfile.write(x + " " + feature + " " + "O\n")
                 continue
             else:
-                capital_feature = x.isupper()
+                capital_feature = x[0].isupper()
                 x_test = [x, feature, capital_feature]
                 x_test = x_encoder.transform([x_test])
                 y_test = model.predict(x_test)
