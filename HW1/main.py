@@ -19,42 +19,42 @@ if __name__ == '__main__':
     # -------------------- Training Data Preprocess --------------------
     # ------------------------------------------------------------------
     # Extracting data, features and labels
-    # x_train, feature_train, y_train = load_raw_dataset("data\\train.txt")
-    # # Fitting and transforming OneHotEncoder for the training data
-    # encoder = OneHotEncoder(handle_unknown="ignore").fit(feature_train)
-    # feature_train = encoder.transform(feature_train)
-    # print(f"Training data is ready to use\nElapse time: {time.time() - start_time:.02f} sec")
-    # # ------------------------------------------------------------------
-    # # -------------------- Validation Data Preprocess ------------------
-    # # ------------------------------------------------------------------
-    # # Extracting data, features and labels
-    # x_val, feature_val, y_val = load_raw_dataset("data\\eval.txt")
-    # # Transforming the above encoder for the validation data
-    # feature_val = encoder.transform(feature_val)
-    # print(f"Validation data is ready to use\nElapse time: {time.time() - start_time:.02f} sec")
-    # # ------------------------------------------------------------------
-    # # ------------------ Model Definition & Evaluation -----------------
-    # # ------------------------------------------------------------------
-    # model = SVC()
-    # model.fit(feature_train, y_train)  # fitting the model on the training data
-    # print(f"SVM model was trained\nElapsed time: {time.time() - start_time:.02f} sec")
-    # print(f"Train score: {model.score(feature_train, y_train):.03f}")
-    # print(f"Eval score: {model.score(feature_val, y_val):.03f}")
-    #
-    # predictions = model.predict(feature_val)  # calculate the predictions on the validation data
-    # if plotConfusionMatrix:
-    #     cm = confusion_matrix(y_val, predictions, labels=model.classes_)  # building a confusion matrix
-    #     disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-    #                                   display_labels=model.classes_)
-    #     disp.plot()
-    #     plt.show()
-    #
-    # if saveConfusions: # Saving bad classification for review
-    #     confused_data = [word + f" , {y_val[idx]}\n" for idx, word in enumerate(x_val) if y_val[idx] != predictions[idx]]
-    #     file = open("confusions.txt", "w")
-    #     file.write("Word, true label \n")
-    #     file.writelines(confused_data)
-    #     file.close()
+    x_train, feature_train, y_train = load_raw_dataset("data\\train.txt")
+    # Fitting and transforming OneHotEncoder for the training data
+    encoder = OneHotEncoder(handle_unknown="ignore").fit(feature_train)
+    feature_train = encoder.transform(feature_train)
+    print(f"Training data is ready to use\nElapse time: {time.time() - start_time:.02f} sec")
+    # ------------------------------------------------------------------
+    # -------------------- Validation Data Preprocess ------------------
+    # ------------------------------------------------------------------
+    # Extracting data, features and labels
+    x_val, feature_val, y_val = load_raw_dataset("data\\eval.txt")
+    # Transforming the above encoder for the validation data
+    feature_val = encoder.transform(feature_val)
+    print(f"Validation data is ready to use\nElapse time: {time.time() - start_time:.02f} sec")
+    # ------------------------------------------------------------------
+    # ------------------ Model Definition & Evaluation -----------------
+    # ------------------------------------------------------------------
+    model = SVC()
+    model.fit(feature_train, y_train)  # fitting the model on the training data
+    print(f"SVM model was trained\nElapsed time: {time.time() - start_time:.02f} sec")
+    print(f"Train score: {model.score(feature_train, y_train):.03f}")
+    print(f"Eval score: {model.score(feature_val, y_val):.03f}")
+
+    predictions = model.predict(feature_val)  # calculate the predictions on the validation data
+    if plotConfusionMatrix:
+        cm = confusion_matrix(y_val, predictions, labels=model.classes_)  # building a confusion matrix
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+                                      display_labels=model.classes_)
+        disp.plot()
+        plt.show()
+
+    if saveConfusions: # Saving bad classification for review
+        confused_data = [word + f" , {y_val[idx]}\n" for idx, word in enumerate(x_val) if y_val[idx] != predictions[idx]]
+        file = open("confusions.txt", "w")
+        file.write("Word, true label \n")
+        file.writelines(confused_data)
+        file.close()
     # ------------------------------------------------------------------
     # ------------ Create "competitive.txt" for substitution -----------
     # ------------------------------------------------------------------
