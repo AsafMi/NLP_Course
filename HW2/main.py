@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-import torch as torch
 from bs4 import BeautifulSoup
 import re
 from gensim.models import word2vec
+from matplotlib import pyplot as plt
 from sklearn.preprocessing import scale
 import torch
 import torch.nn as nn
@@ -14,6 +14,8 @@ def DataPreprocess(path):
     df = pd.read_csv(path)
     lReviews = df.review.to_list()
     lSentiment = df.sentiment.to_list()
+    y_train = [1 if s == "positive" else 0 for s in lSentiment]
+    y_train = np.asarray(y_train, dtype=np.float32)
     lLines = []
     for review in lReviews:
         text   = BeautifulSoup(review, features="html.parser").get_text()                 #-- remove <br> and HTML
@@ -31,17 +33,21 @@ def DataPreprocess(path):
         vec = np.zeros(d).reshape((1, d))
         count = 0
         for word in line:
-            vec += oWord2Vec.wv[word].reshape((1, d))
-            count += 1
+            try:
+                vec += oWord2Vec.wv[word].reshape((1, d))
+                count += 1.
+            except KeyError:
+                continue
         if count != 0:
             vec /= count
         x_train.append(vec)
 
     x_train = np.concatenate(x_train)
-    return scale(x_train)
 
-x_train = DataPreprocess(r"./data/IMDB_train.csv")
-x_val = DataPreprocess(r"./data/IMDB_test.csv.csv")
+    return scale(x_train), y_train
+
+x_train, y_train = DataPreprocess(r"./data/IMDB_train.csv")
+x_val, y_val = DataPreprocess(r"./data/IMDB_test.csv")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # We create a FC regression network, with 2 layers.
@@ -49,7 +55,7 @@ class RegressioNet(nn.Module):
    def __init__(self):
        super(RegressioNet, self).__init__()
        self.hidden_dim = 10
-       self.layer_1 = torch.nn.Linear(1, self.hidden_dim)
+       self.layer_1 = torch.nn.Linear(300, self.hidden_dim)
        self.layer_2 = torch.nn.Linear(self.hidden_dim, 1)
        self.activation = F.relu
 
@@ -63,13 +69,13 @@ net = RegressioNet()
 
 # Define Optimizer and Loss Function
 optimizer = torch.optim.SGD(net.parameters(), lr=0.2)
-loss_func = torch.nn.BCELoss()
+loss_func = torch.nn.BCEWithLogitsLoss()
 
 batch_size = 20
 
 # create Tensor datasets
-train_data = TensorDataset(torch.from_numpy(x_train).float(), torch.from_numpy(train_y).float())
-valid_data = TensorDataset(torch.from_numpy(x_val).float(), torch.from_numpy(val_y).float())
+train_data = TensorDataset(torch.from_numpy(x_train).float(), torch.from_numpy(y_train).float())
+valid_data = TensorDataset(torch.from_numpy(x_val).float(), torch.from_numpy(y_val).float())
 #test_data = TensorDataset(torch.from_numpy(test_x).float(), torch.from_numpy(test_y).float())
 
 # make sure the SHUFFLE your training data
@@ -78,7 +84,7 @@ valid_loader = DataLoader(valid_data, shuffle=False, batch_size=batch_size)
 #test_loader = DataLoader(test_data, shuffle=False, batch_size=batch_size)
 
 # Define training params
-epochs = 1
+epochs = 10
 
 counter = 0
 print_every = 100
@@ -127,7 +133,7 @@ for e in range(epochs):
                 # Creating new variables for the hidden state, otherwise
                 # we'd backprop through the entire training history
                 if print_flag:
-                    inputs, labels = zip(*sorted(zip(inputs.numpy(), labels.numpy())))
+                    inputs, labels = zip(*sorted(zip(inputs.numpy(), labels.numpy()), key=lambda x: x[1]))
                     inputs = torch.from_numpy(np.asarray(inputs))
                     labels = torch.from_numpy(np.asarray(labels))
                 inputs, labels = inputs.to(device), labels.to(device)
@@ -142,24 +148,12 @@ for e in range(epochs):
                 val_loss = loss_func(val_predictions.squeeze(), labels.float())
 
                 val_losses.append(val_loss.item())
-                if print_flag:
-                    print_flag = False
-                    # plot and show learning process
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111)
-                    ax.cla()
-                    ax.scatter(inputs.cpu().data.numpy(), labels.cpu().data.numpy())
-                    ax.plot(inputs.cpu().data.numpy(), val_predictions.cpu().data.numpy(), 'r-', lw=2)
-                    ax.text(0.5, 0, 'Loss=%.4f' % np.mean(val_losses), fontdict={'size': 10, 'color': 'red'})
-                    plt.pause(0.1)
-                    ax.clear()
 
             net.train()
             print("Epoch: {}/{}...".format(e + 1, epochs),
                   "Step: {}...".format(counter),
                   "Loss: {:.6f}...".format(loss.item()),
                   "Val Loss: {:.6f}".format(np.mean(val_losses)))
-plt.show()
 
 
 
