@@ -25,7 +25,7 @@ for line in lLines:
     count = 0
     for word in line:
         try:
-            vec += oWord2Vec[word].reshape((1, d))
+            vec += oWord2Vec.wv[word].reshape((1, d))
             count += 1.
         except KeyError:
             continue
@@ -33,4 +33,5 @@ for line in lLines:
         vec /= count
     x_train.append(vec)
 
-a=1
+x_train = np.concatenate(x_train)
+
