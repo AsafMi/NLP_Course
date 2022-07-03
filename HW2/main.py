@@ -64,7 +64,7 @@ train_loader = DataLoader(train_data, shuffle=True, batch_size=batch_size)
 valid_loader = DataLoader(valid_data, shuffle=False, batch_size=batch_size)
 
 # Define training params
-epochs = 50
+epochs = 100
 optimizer = torch.optim.SGD(net.parameters(), lr=0.1, momentum=0.9)
 scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.01, steps_per_epoch=len(train_loader), epochs=epochs)
 
@@ -149,7 +149,7 @@ for e in range(epochs):
             train_loss.append(loss.item())
             val_acc_list.append(np.mean(val_acc_list_temp))
     train_acc_list.append(np.mean(train_acc_list_temp))
-
+# Saving figures
 fig = plt.figure()
 plt.plot(np.linspace(1, epochs, len(loss_vals)).astype(float), loss_vals, label="val Loss")
 plt.plot(np.linspace(1, epochs, len(train_loss)).astype(float), train_loss, label="train Loss")
