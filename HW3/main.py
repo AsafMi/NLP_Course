@@ -147,4 +147,5 @@ def predict(input_line, n_predictions=3):
             predictions.append([value, all_categories[category_index]])
 
 
-predict('Dovesky')
+predict('אסף')
+predict('יהל')
