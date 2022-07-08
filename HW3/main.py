@@ -1,4 +1,6 @@
 from functions import *
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
 all_letters = "קראטוןםפףךלחיעכגדשזסבהנמצתץ" + " .,;'"
 
@@ -74,7 +76,8 @@ all_losses = []
 start = time.time()
 
 for iter in range(1, n_iters + 1):
-    category, line, category_tensor, line_tensor = randomTrainingExample(all_categories, category_lines, n_letters, all_letters)
+    category, line, category_tensor, line_tensor = randomTrainingExample(all_categories, category_lines, n_letters,
+                                                                         all_letters)
     output, loss = train(category_tensor, line_tensor)
     current_loss += loss
 
@@ -91,10 +94,6 @@ for iter in range(1, n_iters + 1):
         current_loss = 0
 
 # Plotting the Results
-
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-
 plt.figure()
 plt.plot(all_losses)
 
@@ -124,7 +123,7 @@ fig.colorbar(cax)
 ax.set_xticklabels([''] + all_categories, rotation=90)
 ax.set_yticklabels([''] + all_categories)
 
-# Force label at every tick
+# Force labels at every tick
 ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
 ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
 
