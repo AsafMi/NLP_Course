@@ -49,7 +49,7 @@ def train(training_args):
     for epoch in range(training_args.num_epochs):
         print(f"\n\n-------- Epoch: {epoch} --------\n")
         if training_args.do_train:
-            train_loop(train_dataloader, model, loss_fn, optimizer, device, epoch)
+            train_loop(train_dataloader, model, loss_fn, optimizer, device, epoch, training_args)
         if training_args.do_eval_on_train:
             eval_loop(train_dataloader, model, loss_fn, device, TRAIN, epoch)
         if training_args.do_eval:
@@ -61,7 +61,7 @@ def train(training_args):
     return
 
 
-def train_loop(dataloader, model, loss_fn, optimizer, device, epoch):
+def train_loop(dataloader, model, loss_fn, optimizer, device, epoch, training_args):
     model.train()
 
     for iter_num, (input_ids, labels) in enumerate(tqdm(dataloader, desc="Train Loop")):
@@ -71,16 +71,17 @@ def train_loop(dataloader, model, loss_fn, optimizer, device, epoch):
         logits = model(input_ids)
         loss = loss_fn(logits, labels)
 
-        # Backpropagation
-        optimizer.zero_grad()
-        loss.backward()
+        if (iter_num+1) % training_args.accumulation_steps == 0:
+            # Backpropagation
+            optimizer.zero_grad()
+            loss.backward()
 
         # accumulate gradients: preform a optimization step every training_args.accumulate_grad_batches iterations, or when you reach the end of the epoch
         # Remember: iter_num starts at 0. If you set training_args.accumulate_grad_batches to 3, you want to preform your first optimization at the third iteration.
 
 
         # Log loss
-        wandb.log({"train_loop_loss": loss, EPOCH: epoch, ITERATION: iter_num})
+        # wandb.log({"train_loop_loss": loss, EPOCH: epoch, ITERATION: iter_num})
 
 
 def eval_loop(dataloader, model, loss_fn, device, split, epoch):
@@ -106,8 +107,8 @@ def eval_loop(dataloader, model, loss_fn, device, split, epoch):
     accuracy = correct / size
 
     # Log metrics, report everything twice for cross-model comparison too
-    wandb.log({f"{split}_average_loss": average_loss, EPOCH: epoch})
-    wandb.log({f"{split}_accuracy": accuracy, EPOCH: epoch})
+    # wandb.log({f"{split}_average_loss": average_loss, EPOCH: epoch})
+    # wandb.log({f"{split}_accuracy": accuracy, EPOCH: epoch})
 
 
 if __name__ == '__main__':

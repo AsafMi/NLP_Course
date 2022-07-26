@@ -11,7 +11,7 @@ class TweetNet(nn.Module):
         self.dropout = model_args.dropout
 
         # Embedding of dim vocab_size x model_args.lstm_args.input_size
-        self.embedding = nn.Embedding(self.vocab_size, model_args.lstm_args.input_size)
+        self.embedding = nn.Embedding(vocab_size+2, model_args.lstm_args.input_size)
         # LSTM
         self.lstm = nn.LSTM(input_size=model_args.lstm_args.input_size, hidden_size=self.hidden_size)
         # Classifier containing dropout, linear layer and sigmoid
@@ -21,15 +21,15 @@ class TweetNet(nn.Module):
 
     def forward(self, input_ids):
         # Embed
-        embeds = 111  # (1, seq_length) -> (1, seq_length, input_size)
-
+        embeds = self.embedding(input_ids)  # (1, seq_length) -> (1, seq_length, input_size)
+        # embeds = self.dropout(embeds)
         # Run through LSTM and take the final layer's output
-          # (1, seq_length, input_size) -> (1, max_seq_length, hidden_size)
-
+        lstm_out, (ht, ct) = self.lstm(embeds)
+        # (1, seq_length, input_size) -> (1, max_seq_length, hidden_size)
         # Take the mean of all the output vectors
-        seq_embeddings = 111  # (1, max_seq_length, hidden_size) -> (1, hidden_size)
+        seq_embeddings = lstm_out.mean(dim=1)  # (1, max_seq_length, hidden_size) -> (1, hidden_size)
 
         # Classifier
-        logits = 111  # (1, hidden_size) -> (1, n_classes)
+        logits = self.linear(seq_embeddings)  # (1, hidden_size) -> (1, n_classes)
         logits = logits.float()
         return logits

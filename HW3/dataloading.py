@@ -27,6 +27,7 @@ class TweetDataset(Dataset):
         # Set the vocab size
         self.vocab_size = len(self.vocab)
         # Add the UNK token to the vocab
+        self.pad_token = self.vocab_size + 1
         self.unk_token = self.vocab_size
         # Create a dictionary mapping tokens to indices
         self.token2id = {value: index for index, value in enumerate(self.vocab)}
@@ -53,11 +54,14 @@ class TweetDataset(Dataset):
         # Tokenize the text using gensim.utils.tokenize(text, lowercase=True)
         for idx, word in enumerate(text.split()):
             # Make sure to trim sequences to max_seq_length
-            if idx <= self.data_args['max_seq_length']:
-                # Gets the token id, if unknown returns self.unk_token
-                try:
-                    input_ids.append(self.token2id[word])
-                except:
-                    input_ids.append(self.unk_token)
-
+            if idx >= self.data_args['max_seq_length']:
+                break
+            # Gets the token id, if unknown returns self.unk_token
+            try:
+                input_ids.append(self.token2id[word])
+            except:
+                input_ids.append(self.unk_token)
+        # Pad
+        for i in range(self.data_args.max_seq_length - len(input_ids)):
+            input_ids.append(self.pad_token)
         return input_ids
