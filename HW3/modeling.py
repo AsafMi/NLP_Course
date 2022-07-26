@@ -15,7 +15,8 @@ class TweetNet(nn.Module):
         # LSTM
         self.lstm = nn.LSTM(input_size=self.lstm_args.input_size, hidden_size=self.hidden_size,
                             batch_first=self.lstm_args.batch_first, bias=self.lstm_args.bias,
-                            num_layers=self.lstm_args.num_layers, bidirectional=self.lstm_args.bidirectional)
+                            num_layers=self.lstm_args.num_layers, bidirectional=self.lstm_args.bidirectional,
+                            dropout=self.lstm_args.dropout, proj_size=self.lstm_args.proj_size)
         # Classifier containing dropout, linear layer and sigmoid
         self.linear = nn.Linear(self.hidden_size*2, self.output_size)
         self.dropout = nn.Dropout(self.dropout)
