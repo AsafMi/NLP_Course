@@ -19,7 +19,7 @@ from consts import *
 
 def train(training_args):
     # Setting up logging
-    wandb.init(project=PROJECT_NAME, name=training_args.name, config=training_args)
+    # wandb.init(project=PROJECT_NAME, name=training_args.name, config=training_args)
 
     pprint(training_args)
 
@@ -111,7 +111,7 @@ def eval_loop(dataloader, model, loss_fn, device, split, epoch):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Train an LSTM model on the IMDB dataset.')
+    parser = argparse.ArgumentParser(description='Train an LSTM model on the tweets.')
     parser.add_argument('--config', default='config.yaml', type=str,
                         help='Path to YAML config file. Defualt: config.yaml')
     args = parser.parse_args()
