@@ -1,7 +1,7 @@
 from pathlib import Path
 
 PROJECT_NAME = "HW3"
-PROJECT_DIR = Path.home() / "PycharmProjects\\NLP_Course\\HW3"
+PROJECT_DIR = Path.home() / "NLP_Course" / PROJECT_NAME
 DATA_DIR = PROJECT_DIR / "data"
 
 TRAIN = 'train'

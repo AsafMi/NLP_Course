@@ -13,9 +13,11 @@ class TweetNet(nn.Module):
         # Embedding of dim vocab_size x model_args.lstm_args.input_size
         self.embedding = nn.Embedding(vocab_size+2, model_args.lstm_args.input_size)
         # LSTM
-        self.lstm = nn.LSTM(input_size=model_args.lstm_args.input_size, hidden_size=self.hidden_size)
+        self.lstm = nn.LSTM(input_size=self.lstm_args.input_size, hidden_size=self.hidden_size,
+                            batch_first=self.lstm_args.batch_first, bias=self.lstm_args.bias,
+                            num_layers=self.lstm_args.num_layers, bidirectional=self.lstm_args.bidirectional)
         # Classifier containing dropout, linear layer and sigmoid
-        self.linear = nn.Linear(self.hidden_size, self.output_size)
+        self.linear = nn.Linear(self.hidden_size*2, self.output_size)
         self.dropout = nn.Dropout(self.dropout)
         self.classifier = nn.Softmax()
 

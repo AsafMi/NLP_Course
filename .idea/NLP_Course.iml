@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (NLP_Course)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Remote Python 3.8.13 (sftp://student@nlpcourse-0002.eastus.cloudapp.azure.com:22/anaconda/envs/py38_default/bin/python) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
