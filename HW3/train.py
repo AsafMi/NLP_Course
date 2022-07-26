@@ -105,6 +105,8 @@ def eval_loop(dataloader, model, loss_fn, device, split, epoch):
     # Aggregate metrics
     average_loss /= num_batches
     accuracy = correct / size
+    print(f"{average_loss}_average_loss")
+    print(f"{accuracy}_accuracy")
 
     # Log metrics, report everything twice for cross-model comparison too
     # wandb.log({f"{split}_average_loss": average_loss, EPOCH: epoch})
