@@ -75,6 +75,7 @@ def train_loop(dataloader, model, loss_fn, optimizer, device, epoch, training_ar
             # Backpropagation
             optimizer.zero_grad()
             loss.backward()
+            optimizer.step()
 
         # accumulate gradients: preform a optimization step every training_args.accumulate_grad_batches iterations, or when you reach the end of the epoch
         # Remember: iter_num starts at 0. If you set training_args.accumulate_grad_batches to 3, you want to preform your first optimization at the third iteration.
