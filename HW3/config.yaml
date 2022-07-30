@@ -10,7 +10,7 @@ do_test: false  # Evaluate on test set at the end of training
 
 data_args:
   max_seq_length: 64
-  batch_size: 4
+  batch_size: 32
   shuffle: True
   eval_batch_size: 4  # Batch size for evaluation
 

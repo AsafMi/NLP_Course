@@ -25,7 +25,7 @@ class TweetNet(nn.Module):
     def forward(self, input_ids):
         # Embed
         embeds = self.embedding(input_ids)  # (1, seq_length) -> (1, seq_length, input_size)
-        # embeds = self.dropout(embeds)
+        embeds = self.dropout(embeds)
         # Run through LSTM and take the final layer's output
         lstm_out, (ht, ct) = self.lstm(embeds)
         # (1, seq_length, input_size) -> (1, max_seq_length, hidden_size)
@@ -35,4 +35,4 @@ class TweetNet(nn.Module):
         # Classifier
         logits = self.linear(seq_embeddings)  # (1, hidden_size) -> (1, n_classes)
         logits = logits.float()
-        return logits
+        return self.classifier(logits)
