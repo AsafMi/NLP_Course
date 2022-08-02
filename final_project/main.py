@@ -1,8 +1,9 @@
 import random
-
+import sys
 from transformers import (
     HfArgumentParser,
     set_seed,
+    AutoTokenizer
 )
 
 
@@ -18,15 +19,15 @@ from utils.train_utils import *
 
 def train_model(data_args, model_args, training_args, src_datasets, unlabeled_datasets, target_datasets):
     # Load pretrained config tokenizer and model
-    config =
-    tokenizer =
-    model =
+    config = ModelArguments.config_name
+    tokenizer = ModelArguments.tokenizer_name
+    model = ModelArguments.model_name_or_path
 
     # Get compute metrics fn
-    compute_metrics =
+    compute_metrics = 111
 
     # Initialize our Trainer
-    trainer =
+    trainer =111
 
     # Training
     if training_args.do_train:
@@ -66,9 +67,9 @@ def main():
     set_seed(training_args.seed)
 
     # Load datasets
-    src_datasets =
-    unlabeled_datasets =
-    target_datasets =
+    src_datasets =111
+    unlabeled_datasets =111
+    target_datasets =111
 
     # Preprocess & Tokenize datasets
 
